@@ -1,0 +1,214 @@
+# main()
+snippet main
+	int main(int argc, const char** argv)
+	{
+		${1}
+		return 0;
+	}
+# GNU Copyright Header
+snippet gnu
+	/******************************************************************************
+	 *  Copyright (C) 2011 ${1} 
+	 *
+	 *  This program is free software: you can redistribute it and/or modify
+	 *  it under the terms of the GNU General Public License as published by
+	 *  the Free Software Foundation, either version 3 of the License, or
+	 *  (at your option) any later version.
+	 *
+	 *  This program is distributed in the hope that it will be useful,
+	 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	 *  GNU General Public License for more details.
+	 *
+	 *  You should have received a copy of the GNU General Public License
+	 *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	 *****************************************************************************/
+# Separator
+snippet sep
+	//-----------------------------------------------------------------------------
+# Section Header
+snippet head
+	/******************************************************************************
+	 * ${1}
+	 *****************************************************************************/
+# Documentation flower box
+snippet doc
+	/**
+	 * @brief ${1}
+	 **/
+# #include <...>
+snippet Inc
+	#include <${1:stdio}.h>${2}
+# #include "..."
+snippet inc
+	#include "${1:`Filename("$1.h")`}"${2}
+# #ifndef ... #define ... #endif
+snippet ifndef
+	#ifndef $1
+	#define ${1:SYMBOL} ${2:value}
+	#endif${3}
+snippet def
+	#define 
+snippet ifdef
+	#ifdef ${1:FOO}
+		${2:#define }
+	#endif
+snippet #if
+	#if ${1:FOO}
+		${2}
+	#endif
+# If Condition
+snippet if
+	if (${1:/* condition */})
+	{
+		${2:/* code */}
+	}
+snippet el
+	else
+	{
+		${1}
+	}
+# Gentex If Condition
+snippet gif
+	if (${1:/* condition */})
+		{
+		${2:/* code */}
+		}
+snippet gel
+	else
+		{
+		${1}
+		}
+# Tertiary conditional
+snippet t
+	${1:/* condition */} ? ${2:a} : ${3:b}
+# Do While Loop
+snippet do
+	do
+	{
+		${2:/* code */}
+	}
+	while (${1:/* condition */});
+# Gentex Do While Loop
+snippet gdo
+	do
+		{
+		${2:/* code */}
+		}
+	while (${1:/* condition */});
+# While Loop
+snippet wh
+	while (${1:/* condition */})
+	{
+		${2:/* code */}
+	}
+# Gentex While Loop
+snippet gwh
+	while (${1:/* condition */})
+		{
+		${2:/* code */}
+		}
+# Custom For Loop
+snippet for
+	for (${1:i} = ${2:0}; ${3:$1 < 10}; $1${4:++})
+	{
+		${5:/* code */}
+	}
+# Gentex Custom For Loop
+snippet gfor
+	for (${1:i} = ${2:0}; ${3:$1 < 10}; $1${4:++})
+		{
+		${5:/* code */}
+		}
+# Function
+snippet fun
+	${1:void} ${2:function_name}(${3})
+	{
+		${4:/* code */}
+	}
+# Function Declaration
+snippet fund
+	${1:void} ${2:function_name}(${3});${4}
+# Typedef
+snippet td
+	typedef ${1:int} ${2:MyCustomType};${3}
+# Struct
+snippet st
+	struct ${1:`Filename('$1_t', 'name')`}
+	{
+		${2:/* data */}
+	}${3: /* optional variable list */};${4}
+# Typedef struct
+snippet tds
+	typedef struct ${2:_$1 }
+	{
+		${3:/* data */}
+	} ${1:`Filename('$1_t', 'name')`};
+# Typdef enum
+snippet tde
+	typedef enum
+	{
+		${1:/* data */}
+	} ${2:foo};
+# printf
+# unfortunately version this isn't as nice as TextMates's, given the lack of a
+# dynamic `...`
+snippet pr
+	printf("${1:%s}\n"${2});${3}
+# Test File Definition
+snippet tests
+	#include "unity.h"
+
+	// File to Test
+	#include "${1}.h"
+
+	// Real Includes
+	${2}
+
+	// Mock Includes
+	${3}
+
+	void setUp()
+	{
+	}
+
+	void tearDown()
+	{
+	}
+
+	//-----------------------------------------------------------------------------
+
+	${4}
+# Mock Include
+snippet mock
+	#include "mock_${1}.h"
+# Test Definition
+snippet test
+	void test_${1}(void) // Implementation
+	{
+	// Setup
+
+	// Expected Function Calls
+
+	// Function to Test
+
+	// Asserts
+
+	}
+# Doxygen Flower Box
+snippet doxy
+	/**
+	 * @brief ${1}
+	 **/
+# Test Assert Equal
+snippet assert
+	TEST_ASSERT_EQUAL( ${1:TRUE}, ${2} );
+# Requirement Tag: Corner
+snippet cor
+	// Corner
+# Requirement Tag: Implementation
+snippet imp
+	// Implementation
+# Requirement Tag: Requirements
+snippet req
+	// Requirements: ${1}
