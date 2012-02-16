@@ -1,10 +1,4 @@
 "==============================================================================
-" Wish List
-"==============================================================================
-" Less buggy session restore
-" Default window setup
-
-"==============================================================================
 " General Settings
 "==============================================================================
 syntax enable                    " Turn on syntax highlighting
@@ -13,229 +7,161 @@ colorscheme torte                " Set default color scheme
 set nocompatible                 " Disable VI compatibility
 set backspace=indent,eol,start   " Makes backspace work as expected
 set whichwrap+=<,>,[,],h,l       " Make cursor keys wrap lines
-set autoindent                   " Indent follows previous line
+set autoindent                   " turn on auto indent
+set copyindent                   " Indent follows previous line
 set tabstop=4                    " Tabs equivalent to 4 spaces
-set shiftwidth=4                 " Sets the size used for vims reindent operator ( Shift-> and Shift-< )
+set shiftwidth=4                 " Sets the size used for Vim's re-indent operator ( Shift-> and Shift-< )
+set expandtab                    " Expand tabs to spaces
+set softtabstop=4                " Backspace over expanded tabs
 set number                       " Turn on line numbering
 set colorcolumn=80               " Draw right margin at 80 chars
 set nowrap                       " Turn off line wrapping so long lines extend off screen
 set foldmethod=syntax            " Enable folds defined by syntax (i.e. functions)
 set foldlevelstart=100           " Open all folds by default
-set so=7                         " scrolling activates at 7 lines from the top or bottom of screen
+set so=5                         " scrolling activates at 7 lines from the top or bottom of screen
+set nobackup                     " Do not create backup files before editing
+set nowritebackup                " Do not create backup files before writing
+set noswapfile                   " Do not create a swap file for files before editing
 set ruler                        " Always show current cursor position
 set showmatch                    " Highlight matching braces
-set vb t_vb=                     " Turn off visual and error bells
-set cursorline                   " Highlights current line
+set mat=2                        " How long to blink matching braces for
+set visualbell t_vb=             " Turn off visual and error bells
+set noerrorbells                 " Turn off auditory bells
 set hid                          " Change buffer without saving
 set clipboard=unnamed            " Yank and Put commands use the system clipboard
-set hlsearch                     " Turn on search higlighting
-set laststatus=2                 " Turn on status line all the time
+set laststatus=0                 " Turn off the status line
+set undodir=~/vimfiles/undo      " Set directory for storing undo files
+set undofile                     " Turn on persistent undo
+set cscopetag                    " Search both cscope dbs and ctags files for tags
+set csto=0                       " Search cscope dbs before ctags files
+set history=20                   " Save 20 lines of command history
+set hlsearch                     " Turn on search highlighting
 set ignorecase                   " Ignore case in searches
+set smartcase                    " Don't ignore case when search term contains capitals
+set incsearch                    " Highlight search string as you type
+set tags=tags;/                  " Search from current directory to root for ctags db
+set fileformats=unix,dos,mac     " support all three, in this order
+set list                         " Show control and whitespace characters (tabs, spaces, etc.)
+set listchars=tab:>-,trail:-     " Show only trailing spaces and tabs
+setlocal spell spelllang=en_us   " Turn on spell checking
+set lazyredraw                   " Don't redraw unless we need to
+"set cursorline                   " Highlights current line
+"set textwidth=79                 " Wrap to next line if the next character is at the margin
 
 "==============================================================================
-" More Complicated Settings
+" Function and Command Definitions
 "==============================================================================
-"---- Turn off backup and swap files ----
-set nobackup
-set nowb
-set noswapfile
-
-"---- OmniComplete ----
-filetype plugin on
-set ofu=syntaxcomplete#Complete
-set completeopt=longest,menuone
-highlight Pmenu guibg=blue gui=bold
-
-"---- Wild Mode ----
-set wildmenu                 " Turns on auto complete for vim command line
-set wildmode=full
-
-"---- Persistent Undo ----
-set undodir=~/vimfiles/undo  " Set directory for storing undo files
-set undofile                 " Turn on persistent undo
-
-"---- CScope ----
-set cscopetag                " Search both cscope dbs and ctags files for tags
-set csto=0                   " Search cscope dbs before ctags files
-
-"---- Make the Home and End keys smarter ----
-noremap  <expr> <Home> (col('.') == matchend(getline('.'), '^\s*')+1 ? '0'  : '^')
-noremap  <expr> <End>  (col('.') == match(getline('.'),    '\s*$')   ? '$'  : 'g_')
-vnoremap <expr> <End>  (col('.') == match(getline('.'),    '\s*$')   ? '$h' : 'g_')
-imap <Home> <C-o><Home>
-imap <End>  <C-o><End>
-
-"---- Save Session on Exit ----
-augroup autosession
-autocmd autosession BufRead,VimLeave * mksession! ~/.vimsession
-function! RestoreSession()
-	autocmd! autosession	
-	source ~/.vimsession
-	autocmd autosession BufRead,VimLeave * mksession! ~/.vimsession
+function! LoadCscope()
+  let db = findfile("cscope.out", ".;")
+  if (!empty(db))
+    let path = strpart(db, 0, match(db, "[\\\/]cscope.out$"))
+    set nocscopeverbose " suppress 'duplicate connection' error
+    exe "cs add " . db . " " . path
+    set cscopeverbose
+  endif
 endfunction
 
-"---- Status Line ----
-set statusline=\ CWD:\ %r%{CurDir()}%h\ \ \ Line:\ %l/%L\ \ Column:\ %c\ \ %F%m%r%h\ %w
-
-"---- Change to Src dir when opened without a file ----
-au VimEnter * if expand('%') == '' | cd C:\Src | endif 
-
-"==============================================================================
-" Functions
-"==============================================================================
-function! LoadCCTreeDB()
-	CCTreeUnLoadDB
-	let dir = GetCScopeDir() . "/cscope.out"
-	execute("CCTreeLoadDB " . dir)
+function! SwitchToProjectDir()
+  let db = findfile("rakefile.rb", ".;")
+  if (!empty(db))
+    let path = strpart(db, 0, match(db, "[\\\/]rakefile.rb$"))
+    exec "cd " . path
+  endif
 endfunction
 
-function! CurDir()
-    let curdir = substitute(getcwd(), '/Users/amir/', "~/", "g")
-    return curdir
-endfunction
-
-"==============================================================================
-" Commands
-"==============================================================================
-" ---- Vimrc - Edit vimrc file ----
-command! Vimrc :e ~/.vimrc
-
-" ---- Print - Print the current file ----
-command! Print :hardcopy
-
-" ---- Split - Splits the selection into multiple lines based on whitespace ----
-command! -range=% -nargs=0 Split execute "<line1>,<line2>s/\\s\\+/\r/g"
-
-" ---- Trim - Trims trailing white space from the end of every line ----
-command! -range=% -nargs=0 Trim execute "<line1>,<line2>s/\\s\\+$//"
-
-" ---- ToSpaces - Converts leading tabs to spaces ----
-command! -range=% -nargs=0 ToSpaces execute "<line1>,<line2>s/^\\t\\+/\\=substitute(submatch(0), '\\t', repeat(' ', ".&ts."), 'g')"
-
-" ---- ToTabs - Converts leading spaces to tabs ----
-command! -range=% -nargs=0 ToTabs execute "<line1>,<line2>s/^\\( \\{".&ts."\\}\\)\\+/\\=substitute(submatch(0), ' \\{".&ts."\\}', '\\t', 'g')"
-
-" ---- Trim - Trims trailing white space from the end of every line ----
-command! -range=% -nargs=0 NoCR execute "<line1>,<line2>s/\\r//"
-
-" ---- Snippets - Opens a file browser in the snippets directory ----
-command! Snippets :Ex $HOME/vimfiles/snippets
-
-" ---- ToFns - Converts a group of C function prototypes to definitions ----
+" ---- ToFn - Converts a group of C function prototypes to definitions ----
 command! -range=% -nargs=0 ToFn execute "<line1>,<line2>s/;/\r{\r\r}\r/"
 
 "==============================================================================
 " Keyboard Mappings
 "==============================================================================
-" ---- Previous Buffer ----
-map  <C-S-tab> :bp<CR>
-imap <C-S-tab> <ESC>:bp<CR>
-
-" ---- Next Buffer ----
-map  <C-tab> :bn<CR>
-imap <C-tab> <ESC>:bn<CR>
-
-" ---- Delete Buffer (Keep Windows) ----
-map  ;d :Kwbd<CR>
-
-" ---- Directory Listing ----
-map  ;o :Ex<CR>
-
-" ---- List Buffers ----
-map  ;bl :buffers<CR>:buffer
-
-" ---- Restore Buffer ----
-map  ;br :call BufferRestore()<CR>
-
-" ---- Block Comment ----
-map  ;cc <plug>NERDCommenterComment
-
-" ---- Block Uncomment ----
-map  ;cu <plug>NERDCommenterUncomment
-
-" ---- Restore Previous Session ----
-map  ;sr :call RestoreSession()<CR>
+" ---- Define Map Leader ----
+let mapleader = ";"
+let g:mapleader = ";"
 
 " ---- Toggle Fold ----
 map  zz <ESC>za
 
-" ---- Unindent Visual Block ----
+" ---- Indenting Visual Blocks ----
 vnoremap < <gv
-
-" ---- Indent Visual Block ----
 vnoremap > >gv
 
-" ---- Swap current line with line below ----
+" ---- Tab Triggers Omni Complete ----
+inoremap <tab> <C-n>
+inoremap <S-tab> <C-p>
+
+" ---- Buffer Management ----
+map  <C-S-tab>  :bp<CR>
+imap <C-S-tab>  <ESC>:bp<CR>
+map  <C-tab>    :bn<CR>
+imap <C-tab>    <ESC>:bn<CR>
+map  <Leader>d  :bd<CR>
+imap <Leader>d  <ESC>:bd<CR>
+
+" ---- Working With Windows ----
+map <M-h> <C-w>h
+map <M-j> <C-w>j
+map <M-k> <C-w>k
+map <M-l> <C-w>l
+map <M-c> <C-w>c
+map <M-v> :vs<CR>
+map <M-h> :split<CR>
+
+" ---- Moving Lines Around ----
 nmap <C-j> ddp
 imap <C-j> <ESC>ddpi
-
-" ---- Swap current line with line above ----
 nmap <C-k> ddkP
 imap <C-k> <ESC>ddkPi
 
-" ---- Update CTags file ----
-map <F2> <ESC>:call RebuildTagsFile()<CR>
+" ---- CScope Mappings ----
+map <Leader>fs :cs find s <cword><CR>
+map <Leader>fg :cs find g <cword><CR>
+map <Leader>fd :cs find d <cword><CR>
+map <Leader>fc :cs find c <cword><CR>
+map <Leader>ft :cs find t <cword><CR>
+map <Leader>fe :cs find e <cword><CR>
+map <Leader>ff :cs find f <cword><CR>
+map <Leader>fi :cs find i <cword><CR>
 
-" ---- Update CScope Database ----
-map <F3> <ESC>:call RebuildCScopeDB()<CR>
+"==============================================================================
+" Abbreviations
+"==============================================================================
+abbreviate inc #include
+abbreviate def #define
+abbreviate ifndef #ifndef<CR>#endif<up><END>
+abbreviate prf printf("");<left><left><left>
 
-" ---- Open new file for editing ----
-map <F4> <ESC>:enew<CR>i
 
-" ---- Switch between header and C file ----
-map <F5> <ESC>:e %:p:s,.h$,.X123X,:s,.c$,.h,:s,.X123X$,.c,<CR>
+cnoreabbrev trim %s/\s\+$//
+cnoreabbrev print hardcopy
+cnoreabbrev tofn ToFn
+cnoreabbrev fn ToFn
+cnoreabbrev <expr> ff
+          \ ((getcmdtype() == ':' && getcmdpos() <= 4)? 'cs f f'  : 'ff')
 
-" ---- Fast File Open using CScope ----
-map  ;f <ESC>:execute('cs find f ' . input('Filename: '))<CR>
+"==============================================================================
+" Auto Commands
+"==============================================================================
+" Auto locate and connect to cscope db.
+au BufEnter * call SwitchToProjectDir()
 
-" ---- Clear higlighting from last search ----
-map  ;h <ESC>:nohl<CR>
+" Auto locate and connect to cscope db.
+au BufEnter * call LoadCscope()
 
-" ---- Toggle NERD Tree side bar ----
-map  ;t <ESC>:NERDTreeToggle<CR>
+" Replace all tabs with spaces
+au BufEnter * retab
 
-" ---- CScope Loader Mappings ----
-" Find all references to token under cursor
-map \fs <ESC>:CSFindS<CR>
-
-" Find global definitions of token under cursor
-map \fg <ESC>:CSFindG<CR>
-
-" Find functions called by function under cursor
-map \fd <ESC>:CSFindD<CR>
-
-" Find functions calling function under cursor
-map \fc <ESC>:CSFindC<CR>
-
-" Find text under cursor
-map \ft <ESC>:CSFindT<CR>
-
-" Egrep for text under cursor
-map \fe <ESC>:CSFindE<CR>
-
-" Find file under cursor
-map \ff <ESC>:CSFindF<CR>
-
-" Find files including filename under cursor
-map \fi <ESC>:CSFindI<CR>
-
-" Load CScope database with CCTree plugin (for call tree generation)
-map <C-\>l <ESC>:call LoadCCTreeDB()<CR>
+" Trim any trailing whitespace
+au BufEnter * silent! exec("%s/\\s\\+$//")
 
 "==============================================================================
 " GVim
 "==============================================================================
 if has('gui_running')
-	set guioptions-=T         " no toolbar
-	set guioptions-=m         " no menubar
-	set guioptions+=b         " enable horizontal tabbar
-	set guifont=Monaco:h10    " use 10 point monaco font in gui mode
+    set guioptions-=T         " no toolbar
+    set guioptions-=m         " no menubar
+    set guifont=Monaco:h10    " use 10 point Monaco font in gui mode
 
-	" GVim resets this for some stupid reason so disable visual bell ... again
-	autocmd GUIEnter * set visualbell t_vb=
-
-	" GVim specific commands
-	command! Menu   :set guioptions+=m
-	command! NoMenu :set guioptions-=m
+    " GVim resets this for some stupid reason so disable visual bell ... again
+    autocmd GUIEnter * set visualbell t_vb=
 endif
-
