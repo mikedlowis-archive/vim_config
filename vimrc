@@ -43,30 +43,31 @@ set tags=tags;/                  " Search from current directory to root for cta
 set fileformats=unix,dos,mac     " support all three, in this order
 set list                         " Show control and whitespace characters (tabs, spaces, etc.)
 set listchars=tab:>-,trail:-     " Show only trailing spaces and tabs
-setlocal spell spelllang=en_us   " Turn on spell checking
 set lazyredraw                   " Don't redraw unless we need to
-"set cursorline                   " Highlights current line
-"set textwidth=79                 " Wrap to next line if the next character is at the margin
+set formatoptions+=r             " Enable continuation of comments after a newline
 
 "==============================================================================
 " Function and Command Definitions
 "==============================================================================
-function! LoadCscope()
-  let db = findfile("cscope.out", ".;")
-  if (!empty(db))
-    let path = strpart(db, 0, match(db, "[\\\/]cscope.out$"))
-    set nocscopeverbose " suppress 'duplicate connection' error
-    exe "cs add " . db . " " . path
-    set cscopeverbose
-  endif
+function! LoadProject()
+    let proj = findfile("project.vim", ".;")
+    let path = strpart(proj, 0, match(proj, "[\\\/]project.vim$"))
+
+    if (!empty(path))
+        silent! exec "cd " . path
+    endif
+
+    if (!empty(proj))
+        exec "source " . proj
+    endif
 endfunction
 
-function! SwitchToProjectDir()
-  let db = findfile("rakefile.rb", ".;")
-  if (!empty(db))
-    let path = strpart(db, 0, match(db, "[\\\/]rakefile.rb$"))
-    exec "cd " . path
-  endif
+function! ReformatWhiteSpace()
+    if &modifiable
+        retab
+        silent! exec("%s/\\s\\+$//")
+        exec("=")
+    endif
 endfunction
 
 " ---- ToFn - Converts a group of C function prototypes to definitions ----
@@ -79,6 +80,9 @@ command! -range=% -nargs=0 ToFn execute "<line1>,<line2>s/;/\r{\r\r}\r/"
 let mapleader = ";"
 let g:mapleader = ";"
 
+" ---- Quick Save ----
+map <Leader>w :w<CR>
+
 " ---- Toggle Fold ----
 map  zz <ESC>za
 
@@ -86,17 +90,22 @@ map  zz <ESC>za
 vnoremap < <gv
 vnoremap > >gv
 
-" ---- Tab Triggers Omni Complete ----
-inoremap <tab> <C-n>
-inoremap <S-tab> <C-p>
+" ---- Clear Search Highlighting ----
+map <Leader>h :nohl<CR>
+
+" ---- Omni Complete ----
+inoremap <S-tab> <C-n>
+
+" ---- Nerd Tree Toggle ----
+map <Leader>t :NERDTreeToggle<CR>
 
 " ---- Buffer Management ----
 map  <C-S-tab>  :bp<CR>
 imap <C-S-tab>  <ESC>:bp<CR>
 map  <C-tab>    :bn<CR>
 imap <C-tab>    <ESC>:bn<CR>
-map  <Leader>d  :bd<CR>
-imap <Leader>d  <ESC>:bd<CR>
+map  <Leader>d  :Kwbd<CR>
+imap <Leader>d  <ESC>:Kwbd<CR>
 
 " ---- Working With Windows ----
 map <M-h> <C-w>h
@@ -105,7 +114,7 @@ map <M-k> <C-w>k
 map <M-l> <C-w>l
 map <M-c> <C-w>c
 map <M-v> :vs<CR>
-map <M-h> :split<CR>
+map <M-s> :split<CR>
 
 " ---- Moving Lines Around ----
 nmap <C-j> ddp
@@ -126,12 +135,14 @@ map <Leader>fi :cs find i <cword><CR>
 "==============================================================================
 " Abbreviations
 "==============================================================================
+" Normal mode abbreviations
 abbreviate inc #include
 abbreviate def #define
+abbreviate ifdef #ifdef<CR>#endif<up><END>
 abbreviate ifndef #ifndef<CR>#endif<up><END>
 abbreviate prf printf("");<left><left><left>
 
-
+" Command mode abbreviations
 cnoreabbrev trim %s/\s\+$//
 cnoreabbrev print hardcopy
 cnoreabbrev tofn ToFn
@@ -142,17 +153,11 @@ cnoreabbrev <expr> ff
 "==============================================================================
 " Auto Commands
 "==============================================================================
-" Auto locate and connect to cscope db.
-au BufEnter * call SwitchToProjectDir()
+" Auto locate and load project specific settings
+autocmd BufEnter * call LoadProject()
 
-" Auto locate and connect to cscope db.
-au BufEnter * call LoadCscope()
-
-" Replace all tabs with spaces
-au BufEnter * retab
-
-" Trim any trailing whitespace
-au BufEnter * silent! exec("%s/\\s\\+$//")
+" Reformat the whitespace to remove tabs and trailing space
+autocmd BufWritePre * call ReformatWhiteSpace()
 
 "==============================================================================
 " GVim
