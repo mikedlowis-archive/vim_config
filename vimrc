@@ -2,11 +2,11 @@
 " General Settings
 "==============================================================================
 syntax enable                    " Turn on syntax highlighting
-filetype plugin indent off       " Turn off plugin indent to make indent follow previous line (This makes indenting consistent across filetypes)
+filetype plugin indent off       " Turn off plugin indent to use custom indent settings
 colorscheme torte                " Set default color scheme
 set nocompatible                 " Disable VI compatibility
 set backspace=indent,eol,start   " Makes backspace work as expected
-set whichwrap+=<,>,[,],h,l       " Make cursor keys wrap lines
+set whichwrap+=<,>,[,],h,l       " Make cursor keys wrap line
 set autoindent                   " turn on auto indent
 set copyindent                   " Indent follows previous line
 set tabstop=4                    " Tabs equivalent to 4 spaces
@@ -46,6 +46,10 @@ set listchars=tab:>-,trail:-     " Show only trailing spaces and tabs
 set lazyredraw                   " Don't redraw unless we need to
 set formatoptions+=r             " Enable continuation of comments after a newline
 
+filetype plugin on
+set omnifunc=syntaxcomplete#Complete
+set completeopt=menu,preview
+
 "==============================================================================
 " Function and Command Definitions
 "==============================================================================
@@ -66,7 +70,6 @@ function! ReformatWhiteSpace()
     if &modifiable
         retab
         silent! exec("%s/\\s\\+$//")
-        exec("=")
     endif
 endfunction
 
@@ -94,7 +97,7 @@ vnoremap > >gv
 map <Leader>h :nohl<CR>
 
 " ---- Omni Complete ----
-inoremap <S-tab> <C-n>
+inoremap <C-Space> <C-n>
 
 " ---- Nerd Tree Toggle ----
 map <Leader>t :NERDTreeToggle<CR>
@@ -131,6 +134,9 @@ map <Leader>ft :cs find t <cword><CR>
 map <Leader>fe :cs find e <cword><CR>
 map <Leader>ff :cs find f <cword><CR>
 map <Leader>fi :cs find i <cword><CR>
+
+" ---- Switch between header and C file ----
+map <F5> <ESC>:e %:p:s,.h$,.X123X,:s,.c$,.h,:s,.X123X$,.c,<CR>
 
 "==============================================================================
 " Abbreviations
