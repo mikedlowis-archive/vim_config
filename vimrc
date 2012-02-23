@@ -1,54 +1,54 @@
 "==============================================================================
 " General Settings
 "==============================================================================
-syntax enable                    " Turn on syntax highlighting
-filetype plugin indent off       " Turn off plugin indent to use custom indent settings
-colorscheme torte                " Set default color scheme
-set nocompatible                 " Disable VI compatibility
-set backspace=indent,eol,start   " Makes backspace work as expected
-set whichwrap+=<,>,[,],h,l       " Make cursor keys wrap line
-set autoindent                   " turn on auto indent
-set copyindent                   " Indent follows previous line
-set tabstop=4                    " Tabs equivalent to 4 spaces
-set shiftwidth=4                 " Sets the size used for Vim's re-indent operator ( Shift-> and Shift-< )
-set expandtab                    " Expand tabs to spaces
-set softtabstop=4                " Backspace over expanded tabs
-set number                       " Turn on line numbering
-set colorcolumn=80               " Draw right margin at 80 chars
-set nowrap                       " Turn off line wrapping so long lines extend off screen
-set foldmethod=syntax            " Enable folds defined by syntax (i.e. functions)
-set foldlevelstart=100           " Open all folds by default
-set so=5                         " scrolling activates at 7 lines from the top or bottom of screen
-set nobackup                     " Do not create backup files before editing
-set nowritebackup                " Do not create backup files before writing
-set noswapfile                   " Do not create a swap file for files before editing
-set ruler                        " Always show current cursor position
-set showmatch                    " Highlight matching braces
-set mat=2                        " How long to blink matching braces for
-set visualbell t_vb=             " Turn off visual and error bells
-set noerrorbells                 " Turn off auditory bells
-set hid                          " Change buffer without saving
-set clipboard=unnamed            " Yank and Put commands use the system clipboard
-set laststatus=0                 " Turn off the status line
-set undodir=~/vimfiles/undo      " Set directory for storing undo files
-set undofile                     " Turn on persistent undo
-set cscopetag                    " Search both cscope dbs and ctags files for tags
-set csto=0                       " Search cscope dbs before ctags files
-set history=20                   " Save 20 lines of command history
-set hlsearch                     " Turn on search highlighting
-set ignorecase                   " Ignore case in searches
-set smartcase                    " Don't ignore case when search term contains capitals
-set incsearch                    " Highlight search string as you type
-set tags=tags;/                  " Search from current directory to root for ctags db
-set fileformats=unix,dos,mac     " support all three, in this order
-set list                         " Show control and whitespace characters (tabs, spaces, etc.)
-set listchars=tab:>-,trail:-     " Show only trailing spaces and tabs
-set lazyredraw                   " Don't redraw unless we need to
-set formatoptions+=r             " Enable continuation of comments after a newline
-
-filetype plugin on
-set omnifunc=syntaxcomplete#Complete
-set completeopt=menu,preview
+syntax enable                        " Turn on syntax highlighting
+filetype plugin on                   " Turn on filetype plugins
+filetype indent off                  " Turn off filetype indent to use custom indent settings
+colorscheme torte                    " Set default color scheme
+set nocompatible                     " Disable VI compatibility
+set backspace=indent,eol,start       " Makes backspace work as expected
+set whichwrap+=<,>,[,],h,l           " Make cursor keys wrap line
+set autoindent                       " turn on auto indent
+set copyindent                       " Indent follows previous line
+set tabstop=4                        " Tabs equivalent to 4 spaces
+set shiftwidth=4                     " Sets the size used for Vim's re-indent operator ( Shift-> and Shift-< )
+set expandtab                        " Expand tabs to spaces
+set softtabstop=4                    " Backspace over expanded tabs
+set number                           " Turn on line numbering
+set colorcolumn=80                   " Draw right margin at 80 chars
+set nowrap                           " Turn off line wrapping so long lines extend off screen
+set foldmethod=syntax                " Enable folds defined by syntax (i.e. functions)
+set foldlevelstart=100               " Open all folds by default
+set so=5                             " scrolling activates at 7 lines from the top or bottom of screen
+set nobackup                         " Do not create backup files before editing
+set nowritebackup                    " Do not create backup files before writing
+set noswapfile                       " Do not create a swap file for files before editing
+set ruler                            " Always show current cursor position
+set showmatch                        " Highlight matching braces
+set mat=2                            " How long to blink matching braces for
+set visualbell t_vb=                 " Turn off visual and error bells
+set noerrorbells                     " Turn off auditory bells
+set hid                              " Change buffer without saving
+set clipboard=unnamed                " Yank and Put commands use the system clipboard
+set laststatus=0                     " Turn off the status line
+set undodir=~/vimfiles/undo          " Set directory for storing undo files
+set undofile                         " Turn on persistent undo
+set cscopetag                        " Search both cscope dbs and ctags files for tags
+set csto=0                           " Search cscope dbs before ctags files
+set history=20                       " Save 20 lines of command history
+set hlsearch                         " Turn on search highlighting
+set ignorecase                       " Ignore case in searches
+set smartcase                        " Don't ignore case when search term contains capitals
+set incsearch                        " Highlight search string as you type
+set tags=tags;/                      " Search from current directory to root for ctags db
+set fileformats=unix,dos,mac         " support all three, in this order
+set list                             " Show control and whitespace characters (tabs, spaces, etc.)
+set listchars=tab:>-,trail:-         " Show only trailing spaces and tabs
+set lazyredraw                       " Don't redraw unless we need to
+set formatoptions+=r                 " Enable continuation of comments after a newline
+set omnifunc=syntaxcomplete#Complete " Auto complete based on syntax
+set completeopt=menu,longest         " Show a popup menu with the longest common prefix selected
+highlight Pmenu guibg=blue gui=bold  " Change omnicomplete window to blue background
 
 "==============================================================================
 " Function and Command Definitions
