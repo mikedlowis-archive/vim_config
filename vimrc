@@ -60,14 +60,12 @@ let g:BufsRight = "" " Buffers to the right of the current buffer
 "==============================================================================
 " Function and Command Definitions
 "==============================================================================
-set statusline=%-(%{g:BufsLeft}%#CurBuf#%{g:CurBuffer}%#SyntaxLine#%{g:BufsRight}%)%=[%l][%c][%P][%L]
-
-"set statusline=%(%{g:BufsLeft}
-"set statusline+=%#CurBuf#
-"set statusline+=%{g:CurBuffer}
-"set statusline+=%#SyntaxLine#
-"set statusline+=%{g:BufsRight}%)
-"set statusline+=%<%=[%l][%c][%P][%L]%<
+set statusline=%{g:BufsLeft}
+set statusline+=%#CurBuf#
+set statusline+=%{g:CurBuffer}
+set statusline+=%#SyntaxLine#
+set statusline+=%{g:BufsRight}
+set statusline+=%<%=[%l][%c][%P][%L]%<
 
 "==============================================================================
 " Function and Command Definitions
@@ -129,32 +127,6 @@ function! UpdateStatus()
         let g:BufsRight = strpart(g:BufsRight, 0, my_right_len) . '>'
     endif
 endfunction
-
-"function! UpdateStatus()
-"    let g:CurBuffer = '[' . bufnr('%') . ' ' . expand('%:t') . ((&modified) ? ' +]' : ']')
-"    let max_len = winwidth(0) - len(g:CurBuffer)
-"    let g:BufsLeft = ""
-"    let g:BufsRight = ""
-"    let i = bufnr('$')
-"
-"    while(i > 0)
-"        if buflisted(i) && getbufvar(i, "&modifiable") && i != bufnr('%')
-"            let bufName  =  '[' . i . ' ' . fnamemodify(bufname(i), ":t")
-"            let bufName .= (getbufvar(i, "&modified") ? ' +]' : ']' )
-"            if i < bufnr('%')
-"                let g:BufsLeft = bufName . g:BufsLeft
-"            else
-"                let g:BufsRight = bufName . g:BufsRight
-"            endif
-"        endif
-"        let i -= 1
-"    endwhile
-"
-"    if (len(g:BufsLeft) + len(g:CurBuffer)) > max_len
-"        let strstart = (len(g:BufsLeft) + len(g:CurBuffer)) - max_len
-"        let g:BufsLeft = '<' . strpart(g:BufsLeft, strstart, max_len)
-"    endif
-"endfunction
 
 " ---- ToFn - Converts a group of C function prototypes to definitions ----
 command! -range=% -nargs=0 ToFn execute "<line1>,<line2>s/;/\r{\r\r}\r/"
