@@ -1,10 +1,11 @@
 "==============================================================================
 " General Settings
 "==============================================================================
+let $VIMHOME=expand("<sfile>:p:h")   " Keep track of where our vim settings directory is
 syntax enable                        " Turn on syntax highlighting
 filetype plugin on                   " Turn on filetype plugins
 filetype indent off                  " Turn off filetype indent to use custom indent settings
-colorscheme torte                    " Set default color scheme
+colorscheme cake                     " Set default color scheme
 set nocompatible                     " Disable VI compatibility
 set backspace=indent,eol,start       " Makes backspace work as expected
 set whichwrap+=<,>,[,],h,l           " Make cursor keys wrap line
@@ -30,15 +31,15 @@ set visualbell t_vb=                 " Turn off visual and error bells
 set noerrorbells                     " Turn off auditory bells
 set hid                              " Change buffer without saving
 set clipboard=unnamed                " Yank and Put commands use the system clipboard
-set laststatus=0                     " Turn off the status line
-set undodir=~/vimfiles/undo          " Set directory for storing undo files
+set laststatus=2                     " Turn off the status line
+set undodir=$VIMHOME/undo            " Set directory for storing undo files
 set undofile                         " Turn on persistent undo
 set cscopetag                        " Search both cscope dbs and ctags files for tags
 set csto=0                           " Search cscope dbs before ctags files
 set history=20                       " Save 20 lines of command history
 set hlsearch                         " Turn on search highlighting
 set ignorecase                       " Ignore case in searches
-set smartcase                        " Don't ignore case when search term contains capitals
+"set smartcase                        " Don't ignore case when search term contains capitals
 set incsearch                        " Highlight search string as you type
 set tags=tags;/                      " Search from current directory to root for ctags db
 set fileformats=unix,dos,mac         " support all three, in this order
@@ -48,7 +49,25 @@ set lazyredraw                       " Don't redraw unless we need to
 set formatoptions+=r                 " Enable continuation of comments after a newline
 set omnifunc=syntaxcomplete#Complete " Auto complete based on syntax
 set completeopt=menu,longest         " Show a popup menu with the longest common prefix selected
-highlight Pmenu guibg=blue gui=bold  " Change omnicomplete window to blue background
+
+"==============================================================================
+" Global Variables
+"==============================================================================
+let g:BufsLeft = ""  " Buffers to the left of our current buffer
+let g:CurBuffer = "" " Name of our current buffer
+let g:BufsRight = "" " Buffers to the right of the current buffer
+
+"==============================================================================
+" Function and Command Definitions
+"==============================================================================
+set statusline=%-(%{g:BufsLeft}%#CurBuf#%{g:CurBuffer}%#SyntaxLine#%{g:BufsRight}%)%=[%l][%c][%P][%L]
+
+"set statusline=%(%{g:BufsLeft}
+"set statusline+=%#CurBuf#
+"set statusline+=%{g:CurBuffer}
+"set statusline+=%#SyntaxLine#
+"set statusline+=%{g:BufsRight}%)
+"set statusline+=%<%=[%l][%c][%P][%L]%<
 
 "==============================================================================
 " Function and Command Definitions
@@ -72,6 +91,70 @@ function! ReformatWhiteSpace()
         silent! exec("%s/\\s\\+$//")
     endif
 endfunction
+
+function! UpdateStatus()
+    let g:CurBuffer = '[' . bufnr('%') . ' ' . expand('%:t') . ((&modified) ? ' +]' : ']')
+    let g:BufsLeft = ""
+    let g:BufsRight = ""
+    let i = bufnr('$')
+    let my_left_len = (winwidth(0) - len(g:CurBuffer) - 20)
+    let my_right_len = 0
+
+    while(i > 0)
+        if buflisted(i) && getbufvar(i, "&modifiable") && i != bufnr('%')
+            let bufName  =  '[' . i . ' ' . fnamemodify(bufname(i), ":t")
+            let bufName .= (getbufvar(i, "&modified") ? ' +]' : ']' )
+            if i < bufnr('%')
+                let g:BufsLeft = bufName . g:BufsLeft
+            else
+                let g:BufsRight = bufName . g:BufsRight
+            endif
+        endif
+        let i -= 1
+    endwhile
+
+    if len(g:BufsLeft) < my_left_len
+        let my_right_len = winwidth(0) - (len(g:BufsLeft) + len(g:CurBuffer) + 20)
+    endif
+
+    if len(g:BufsRight) < my_right_len
+        let my_left_len = winwidth(0) - (len(g:BufsRight) + len(g:CurBuffer) + 20)
+    endif
+
+    if len(g:BufsLeft) > my_left_len
+        let g:BufsLeft = '<' . strpart(g:BufsLeft, len(g:BufsLeft) - my_left_len, my_left_len)
+    endif
+
+    if len(g:BufsRight) > my_right_len
+        let g:BufsRight = strpart(g:BufsRight, 0, my_right_len) . '>'
+    endif
+endfunction
+
+"function! UpdateStatus()
+"    let g:CurBuffer = '[' . bufnr('%') . ' ' . expand('%:t') . ((&modified) ? ' +]' : ']')
+"    let max_len = winwidth(0) - len(g:CurBuffer)
+"    let g:BufsLeft = ""
+"    let g:BufsRight = ""
+"    let i = bufnr('$')
+"
+"    while(i > 0)
+"        if buflisted(i) && getbufvar(i, "&modifiable") && i != bufnr('%')
+"            let bufName  =  '[' . i . ' ' . fnamemodify(bufname(i), ":t")
+"            let bufName .= (getbufvar(i, "&modified") ? ' +]' : ']' )
+"            if i < bufnr('%')
+"                let g:BufsLeft = bufName . g:BufsLeft
+"            else
+"                let g:BufsRight = bufName . g:BufsRight
+"            endif
+"        endif
+"        let i -= 1
+"    endwhile
+"
+"    if (len(g:BufsLeft) + len(g:CurBuffer)) > max_len
+"        let strstart = (len(g:BufsLeft) + len(g:CurBuffer)) - max_len
+"        let g:BufsLeft = '<' . strpart(g:BufsLeft, strstart, max_len)
+"    endif
+"endfunction
 
 " ---- ToFn - Converts a group of C function prototypes to definitions ----
 command! -range=% -nargs=0 ToFn execute "<line1>,<line2>s/;/\r{\r\r}\r/"
@@ -99,16 +182,13 @@ map <Leader>h :nohl<CR>
 " ---- Omni Complete ----
 inoremap <C-Space> <C-n>
 
-" ---- Nerd Tree Toggle ----
-map <Leader>t :NERDTreeToggle<CR>
-
 " ---- Buffer Management ----
 map  <C-S-tab>  :bp<CR>
 imap <C-S-tab>  <ESC>:bp<CR>
 map  <C-tab>    :bn<CR>
 imap <C-tab>    <ESC>:bn<CR>
-map  <Leader>d  :Kwbd<CR>
-imap <Leader>d  <ESC>:Kwbd<CR>
+map  <Leader>d  :bd<CR>
+imap <Leader>d  <ESC>:bd<CR>
 
 " ---- Working With Windows ----
 map <M-h> <C-w>h
@@ -148,6 +228,15 @@ abbreviate ifdef #ifdef<CR>#endif<up><END>
 abbreviate ifndef #ifndef<CR>#endif<up><END>
 abbreviate prf printf("");<left><left><left>
 
+abbreviate ctest
+    \void test_(void)<CR>
+    \{<CR>
+    \   // Setup<CR>
+    \   // Expected calls<CR>
+    \   // Function to test<CR>
+    \   // Asserts<CR>
+    \}<UP><UP><UP><UP><UP><UP><END><ESC>%i
+
 " Command mode abbreviations
 cnoreabbrev trim %s/\s\+$//
 cnoreabbrev print hardcopy
@@ -164,6 +253,9 @@ autocmd BufEnter * call LoadProject()
 
 " Reformat the whitespace to remove tabs and trailing space
 autocmd BufWritePre * call ReformatWhiteSpace()
+
+" Update the buffer list in the status line
+autocmd VimEnter,BufNew,BufEnter,BufWritePost,VimResized * call UpdateStatus()
 
 "==============================================================================
 " GVim
