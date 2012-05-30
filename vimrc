@@ -90,13 +90,16 @@ function! ReformatWhiteSpace()
     endif
 endfunction
 
-function! UpdateStatus()
+function! UpdateStatus(lmarg,rmarg)
+    " Reset our Globals
     let g:CurBuffer = '[' . bufnr('%') . ' ' . expand('%:t') . ((&modified) ? ' +]' : ']')
     let g:BufsLeft = ""
     let g:BufsRight = ""
-    let i = bufnr('$')
-    let my_left_len = (winwidth(0) - len(g:CurBuffer) - 20)
+
+    let tot_margin = a:lmarg+ a:rmarg
+    let my_left_len = (winwidth(0) - len(g:CurBuffer) - tot_margin)
     let my_right_len = 0
+    let i = bufnr('$')
 
     while(i > 0)
         if buflisted(i) && getbufvar(i, "&modifiable") && i != bufnr('%')
@@ -112,11 +115,11 @@ function! UpdateStatus()
     endwhile
 
     if len(g:BufsLeft) < my_left_len
-        let my_right_len = winwidth(0) - (len(g:BufsLeft) + len(g:CurBuffer) + 20)
+        let my_right_len = winwidth(0) - (len(g:BufsLeft) + len(g:CurBuffer) + tot_margin)
     endif
 
     if len(g:BufsRight) < my_right_len
-        let my_left_len = winwidth(0) - (len(g:BufsRight) + len(g:CurBuffer) + 20)
+        let my_left_len = winwidth(0) - (len(g:BufsRight) + len(g:CurBuffer) + tot_margin)
     endif
 
     if len(g:BufsLeft) > my_left_len
@@ -137,6 +140,10 @@ command! -range=% -nargs=0 ToFn execute "<line1>,<line2>s/;/\r{\r\r}\r/"
 " ---- Define Map Leader ----
 let mapleader = ";"
 let g:mapleader = ";"
+
+" ---- Move Cursor By Display Lines ----
+map j gj
+map k gk
 
 " ---- Quick Save ----
 map <Leader>w :w<CR>
@@ -159,8 +166,6 @@ map  <C-S-tab>  :bp<CR>
 imap <C-S-tab>  <ESC>:bp<CR>
 map  <C-tab>    :bn<CR>
 imap <C-tab>    <ESC>:bn<CR>
-map  <Leader>d  :bd<CR>
-imap <Leader>d  <ESC>:bd<CR>
 
 " ---- Working With Windows ----
 map <M-h> <C-w>h
@@ -186,6 +191,11 @@ map <Leader>ft :cs find t <cword><CR>
 map <Leader>fe :cs find e <cword><CR>
 map <Leader>ff :cs find f <cword><CR>
 map <Leader>fi :cs find i <cword><CR>
+
+" ---- CScope Mappings ----
+map <Leader>dc :Dox<CR>
+map <Leader>da :DoxAuthor<CR>
+map <Leader>dl :DoxLic<CR>
 
 " ---- Switch between header and C file ----
 map <F5> <ESC>:e %:p:s,.h$,.X123X,:s,.c$,.h,:s,.X123X$,.c,<CR>
@@ -227,7 +237,16 @@ autocmd BufEnter * call LoadProject()
 autocmd BufWritePre * call ReformatWhiteSpace()
 
 " Update the buffer list in the status line
-autocmd VimEnter,BufNew,BufEnter,BufWritePost,VimResized * call UpdateStatus()
+autocmd VimEnter,BufNew,BufEnter,BufWritePost,VimResized,FocusLost,FocusGained,InsertLeave * call UpdateStatus(0,20)
+
+" Set filetypes
+autocmd BufRead,BufNewFile *.md set filetype=markdown
+
+"==============================================================================
+" Doxygen Comment Configuration
+"==============================================================================
+" File author tag
+let g:DoxygenToolkit_authorName = "Michael D. Lowis"
 
 "==============================================================================
 " GVim
