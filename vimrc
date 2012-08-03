@@ -203,22 +203,6 @@ map <F5> <ESC>:e %:p:s,.h$,.X123X,:s,.c$,.h,:s,.X123X$,.c,<CR>
 "==============================================================================
 " Abbreviations
 "==============================================================================
-" Normal mode abbreviations
-abbreviate inc #include
-abbreviate def #define
-abbreviate ifdef #ifdef<CR>#endif<up><END>
-abbreviate ifndef #ifndef<CR>#endif<up><END>
-abbreviate prf printf("");<left><left><left>
-
-abbreviate ctest
-    \void test_(void)<CR>
-    \{<CR>
-    \   // Setup<CR>
-    \   // Expected calls<CR>
-    \   // Function to test<CR>
-    \   // Asserts<CR>
-    \}<UP><UP><UP><UP><UP><UP><END><ESC>%i
-
 " Command mode abbreviations
 cnoreabbrev trim %s/\s\+$//
 cnoreabbrev print hardcopy
