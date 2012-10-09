@@ -4,7 +4,7 @@
 let $VIMHOME=expand("<sfile>:p:h")   " Keep track of where our vim settings directory is
 syntax enable                        " Turn on syntax highlighting
 filetype plugin on                   " Turn on filetype plugins
-filetype indent off                  " Turn off filetype indent to use custom indent settings
+filetype indent on                   " Turn off filetype indent to use custom indent settings
 colorscheme cake                     " Set default color scheme
 set nocompatible                     " Disable VI compatibility
 set backspace=indent,eol,start       " Makes backspace work as expected
@@ -39,7 +39,7 @@ set csto=0                           " Search cscope dbs before ctags files
 set history=20                       " Save 20 lines of command history
 set hlsearch                         " Turn on search highlighting
 set ignorecase                       " Ignore case in searches
-"set smartcase                        " Don't ignore case when search term contains capitals
+set smartcase                        " Don't ignore case when search term contains capitals
 set incsearch                        " Highlight search string as you type
 set tags=tags;/                      " Search from current directory to root for ctags db
 set fileformats=unix,dos,mac         " support all three, in this order
@@ -192,7 +192,7 @@ map <Leader>fe :cs find e <cword><CR>
 map <Leader>ff :cs find f <cword><CR>
 map <Leader>fi :cs find i <cword><CR>
 
-" ---- CScope Mappings ----
+" ---- Doxygen Comment Mappings ----
 map <Leader>dc :Dox<CR>
 map <Leader>da :DoxAuthor<CR>
 map <Leader>dl :DoxLic<CR>
@@ -204,6 +204,7 @@ map <F5> <ESC>:e %:p:s,.h$,.X123X,:s,.c$,.h,:s,.X123X$,.c,<CR>
 " Abbreviations
 "==============================================================================
 " Command mode abbreviations
+cnoreabbrev format <ESC><S-g>=gg
 cnoreabbrev trim %s/\s\+$//
 cnoreabbrev print hardcopy
 cnoreabbrev tofn ToFn
