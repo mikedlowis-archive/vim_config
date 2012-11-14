@@ -14,7 +14,7 @@ syn keyword     cLabel          case default
 syn keyword     cConditional    if else switch
 syn keyword     cRepeat         while for do
 
-syn keyword     cTodo           contained TODO FIXME XXX
+syn keyword     cTodo           contained TODO FIXME XXX NOTE DELETE
 
 " It's easy to accidentally add a space after a backslash that was intended
 " for line continuation.  Some compilers allow it, which makes it
@@ -170,6 +170,7 @@ if exists("c_gnu")
 endif
 syn keyword     cType           int long short char void
 syn keyword     cType           signed unsigned float double
+syn keyword     cType           U8 U16 U32 U64 S8 S16 S32 S64 C8 F32 F64 BOOL
 if !exists("c_no_ansi") || exists("c_ansi_typedefs")
   syn keyword   cType           size_t ssize_t off_t wchar_t ptrdiff_t sig_atomic_t fpos_t
   syn keyword   cType           clock_t time_t va_list jmp_buf FILE DIR div_t ldiv_t
@@ -266,7 +267,7 @@ if !exists("c_no_ansi") || exists("c_ansi_constants") || exists("c_gnu")
   syn keyword cConstant M_1_PI M_2_PI M_2_SQRTPI M_SQRT2 M_SQRT1_2
 endif
 if !exists("c_no_c99") " ISO C99
-  syn keyword cConstant true false
+  syn keyword cConstant true false TRUE FALSE
 endif
 
 " Accept %: for # (C99)

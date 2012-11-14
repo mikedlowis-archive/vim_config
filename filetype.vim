@@ -3,7 +3,8 @@ if exists("did_load_filetypes")
 endif
 
 augroup filetypedetect
-  au! BufRead,BufNewFile *.mot  setfiletype srec
-  au! BufRead,BufNewFile *.pslt setfiletype pslt
-  au! BufRead,BufNewFile *.rkt  setfiletype scheme
+    au! BufRead,BufNewFile *.mot  setfiletype srec
+    au! BufRead,BufNewFile *.pslt setfiletype pslt
+    au! BufRead,BufNewFile *.rkt  setfiletype scheme
+    au! BufRead,BufNewFile *.md   setfiletype markdown
 augroup END
