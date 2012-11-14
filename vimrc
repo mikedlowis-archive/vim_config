@@ -53,9 +53,10 @@ set completeopt=menu,longest         " Show a popup menu with the longest common
 "==============================================================================
 " Global Variables
 "==============================================================================
-let g:BufsLeft = ""  " Buffers to the left of our current buffer
-let g:CurBuffer = "" " Name of our current buffer
-let g:BufsRight = "" " Buffers to the right of the current buffer
+let g:TemplateDir = $VIMHOME . "/templates" " Directory to search for templates
+let g:BufsLeft    = "" " Buffers to the left of our current buffer
+let g:CurBuffer   = "" " Name of our current buffer
+let g:BufsRight   = "" " Buffers to the right of the current buffer
 
 "==============================================================================
 " Function and Command Definitions
@@ -70,6 +71,11 @@ set statusline+=%<%=[%l][%c][%P][%L]%<
 "==============================================================================
 " Function and Command Definitions
 "==============================================================================
+
+" ToFn - Converts a group of C function prototypes to definitions ----
+command! -range=% -nargs=0 ToFn execute "<line1>,<line2>s/;/\r{\r\r}\r/"
+
+" LoadProject - Searches for and loads project specific settings
 function! LoadProject()
     let proj = findfile("project.vim", ".;")
     let path = strpart(proj, 0, match(proj, "[\\\/]project.vim$"))
@@ -83,6 +89,7 @@ function! LoadProject()
     endif
 endfunction
 
+" ReformatWhiteSpace - Convert tabs to spaces and remove trailing whitespace
 function! ReformatWhiteSpace()
     if &modifiable
         retab
@@ -90,6 +97,19 @@ function! ReformatWhiteSpace()
     endif
 endfunction
 
+" Template - Finds and inserts the text of the given template
+function! Template(input)
+    let tdir  = g:TemplateDir
+    let tname = substitute(split(a:input,' ')[0], '\r', '', '') . '.m4'
+    let targs = strpart(a:input,stridx(a:input,' ')+1)
+    if filereadable( tdir . '/' . tname )
+        execute(".-1read !m4 -DARGS='" . targs . "' -I" . tdir . " " . tname)
+    else
+        echoerr "No template found: " . tname
+    endif
+endfunction
+
+" UpdateStatus - Updates the status bar to display a list of buffers
 function! UpdateStatus(lmarg,rmarg)
     " Reset our Globals
     let g:CurBuffer = '[' . bufnr('%') . ' ' . expand('%:t') . ((&modified) ? ' +]' : ']')
@@ -131,9 +151,6 @@ function! UpdateStatus(lmarg,rmarg)
     endif
 endfunction
 
-" ---- ToFn - Converts a group of C function prototypes to definitions ----
-command! -range=% -nargs=0 ToFn execute "<line1>,<line2>s/;/\r{\r\r}\r/"
-
 "==============================================================================
 " Keyboard Mappings
 "==============================================================================
@@ -144,9 +161,6 @@ let g:mapleader = ";"
 " ---- Move Cursor By Display Lines ----
 map j gj
 map k gk
-
-" ---- Quick Save ----
-map <Leader>w :w<CR>
 
 " ---- Toggle Fold ----
 map  zz <ESC>za
@@ -160,6 +174,9 @@ map <Leader>h :nohl<CR>
 
 " ---- Omni Complete ----
 inoremap <C-Space> <C-n>
+
+" ---- Template Replacement ----
+map ;t :call Template(getline("."))<CR>jdd
 
 " ---- Buffer Management ----
 map  <C-S-tab>  :bp<CR>
@@ -206,7 +223,6 @@ map <F5> <ESC>:e %:p:s,.h$,.X123X,:s,.c$,.h,:s,.X123X$,.c,<CR>
 " Command mode abbreviations
 cnoreabbrev format <ESC><S-g>=gg
 cnoreabbrev trim %s/\s\+$//
-cnoreabbrev print hardcopy
 cnoreabbrev tofn ToFn
 cnoreabbrev fn ToFn
 cnoreabbrev <expr> ff
@@ -224,9 +240,6 @@ autocmd BufWritePre * call ReformatWhiteSpace()
 " Update the buffer list in the status line
 autocmd VimEnter,BufNew,BufEnter,BufWritePost,VimResized,FocusLost,FocusGained,InsertLeave * call UpdateStatus(0,20)
 
-" Set filetypes
-autocmd BufRead,BufNewFile *.md set filetype=markdown
-
 "==============================================================================
 " Doxygen Comment Configuration
 "==============================================================================
@@ -237,9 +250,9 @@ let g:DoxygenToolkit_authorName = "Michael D. Lowis"
 " GVim
 "==============================================================================
 if has('gui_running')
-    set guioptions-=T         " no toolbar
-    set guioptions-=m         " no menubar
-    set guifont=Monaco:h10    " use 10 point Monaco font in gui mode
+    set guioptions-=T      " no toolbar
+    set guioptions-=m      " no menubar
+    set guifont=Monaco:h10 " use 10 point Monaco font in gui mode
 
     " GVim resets this for some stupid reason so disable visual bell ... again
     autocmd GUIEnter * set visualbell t_vb=
