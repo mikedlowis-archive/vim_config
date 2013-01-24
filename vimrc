@@ -72,8 +72,11 @@ set statusline+=%<%=[%l][%c][%P][%L]%<
 " Function and Command Definitions
 "==============================================================================
 
-" ToFn - Converts a group of C function prototypes to definitions ----
+" ToFn - Converts a group of C function prototypes to definitions
 command! -range=% -nargs=0 ToFn execute "<line1>,<line2>s/;/\r{\r\r}\r/"
+
+" Todo - Opens ~/.todo.md for editing
+command! Todo edit ~/.todo.md
 
 " LoadProject - Searches for and loads project specific settings
 function! LoadProject()
