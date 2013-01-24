@@ -4,13 +4,9 @@ define(FNDESC,  patsubst(substr(ARGS,eval(SEP_IDX+1)),` ',`_'))dnl
 dnl
 format(`void test_%s_%s',FNNAME,FNDESC)(void) // Implementation
 {
-    // Setup
-
-    // Expected Function Calls
-
-    // Function to Test
-
-    // Asserts
-
+    /* Ensure known test state */
+    /* Setup expected call chain */
+    /* Call function under test */
+    /* Verify test results */
 }
 
