@@ -53,6 +53,7 @@ set completeopt=menu,longest         " Show a popup menu with the longest common
 "==============================================================================
 " Global Variables
 "==============================================================================
+let g:TodoList    = "~/.todo.md"
 let g:TemplateDir = $VIMHOME . "/templates" " Directory to search for templates
 let g:BufsLeft    = "" " Buffers to the left of our current buffer
 let g:CurBuffer   = "" " Name of our current buffer
@@ -76,7 +77,10 @@ set statusline+=%<%=[%l][%c][%P][%L]%<
 command! -range=% -nargs=0 ToFn execute "<line1>,<line2>s/;/\r{\r\r}\r/"
 
 " Todo - Opens ~/.todo.md for editing
-command! Todo edit ~/.todo.md
+command! Todo execute "edit " . g:TodoList
+
+" Todo - Opens ~/.todo.md for editing
+command! -nargs=1 Template execute "edit " . g:TemplateDir . "/" . <f-args> . ".m4"
 
 " LoadProject - Searches for and loads project specific settings
 function! LoadProject()
