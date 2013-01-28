@@ -1,15 +1,16 @@
-#include "unity.h"
-
-// File to Test
+/* File to Test */
 `#'include "format(`%s',ARGS).h"
 
-// Real Includes
+/* Real Includes */
+#include "unity.h"
 
-// Mock Includes
+/* Mock Includes */
 
-// Globals
+/* Globals */
 
-// Helper Functions
+/* Helper Functions */
+
+/* Ceedling Functions */
 void setUp(void)
 {
 }
@@ -18,6 +19,6 @@ void tearDown(void)
 {
 }
 
-//-----------------------------------------------------------------------------
+/*****************************************************************************/
 
 
