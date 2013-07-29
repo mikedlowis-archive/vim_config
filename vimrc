@@ -31,7 +31,7 @@ set visualbell t_vb=                 " Turn off visual and error bells
 set noerrorbells                     " Turn off auditory bells
 set hid                              " Change buffer without saving
 set clipboard=unnamed                " Yank and Put commands use the system clipboard
-set laststatus=2                     " Turn off the status line
+set laststatus=2                     " Turn on the status line always
 set undodir=$VIMHOME/undo            " Set directory for storing undo files
 set undofile                         " Turn on persistent undo
 set cscopetag                        " Search both cscope dbs and ctags files for tags
@@ -49,6 +49,8 @@ set lazyredraw                       " Don't redraw unless we need to
 set formatoptions+=r                 " Enable continuation of comments after a newline
 set omnifunc=syntaxcomplete#Complete " Auto complete based on syntax
 set completeopt=menu,longest         " Show a popup menu with the longest common prefix selected
+set wildmode=list:full
+set wildmenu
 
 "==============================================================================
 " Global Variables
@@ -76,10 +78,10 @@ set statusline+=%<%=[%l][%c][%P][%L]%<
 " ToFn - Converts a group of C function prototypes to definitions
 command! -range=% -nargs=0 ToFn execute "<line1>,<line2>s/;/\r{\r\r}\r/"
 
-" Todo - Opens ~/.todo.md for editing
+" Todo - Opens g:TodoList for editing
 command! Todo execute "edit " . g:TodoList
 
-" Todo - Opens ~/.todo.md for editing
+" Template - Opens the specified template for editing
 command! -nargs=1 Template execute "edit " . g:TemplateDir . "/" . <f-args> . ".m4"
 
 " LoadProject - Searches for and loads project specific settings
@@ -98,10 +100,12 @@ endfunction
 
 " ReformatWhiteSpace - Convert tabs to spaces and remove trailing whitespace
 function! ReformatWhiteSpace()
+    let line_num = line(".")
     if &modifiable
         retab
         silent! exec("%s/\\s\\+$//")
     endif
+    execute(":" . line_num)
 endfunction
 
 " Template - Finds and inserts the text of the given template
@@ -111,6 +115,9 @@ function! Template(input)
     let targs = strpart(a:input,stridx(a:input,' ')+1)
     if filereadable( tdir . '/' . tname )
         execute(".-1read !m4 -DARGS='" . targs . "' -I" . tdir . " " . tname)
+        let line_num = line(".")
+        execute("normal G=gg")
+        execute(":" . line_num)
     else
         echoerr "No template found: " . tname
     endif
@@ -170,7 +177,7 @@ map j gj
 map k gk
 
 " ---- Toggle Fold ----
-map  zz <ESC>za
+map zz <ESC>za
 
 " ---- Indenting Visual Blocks ----
 vnoremap < <gv
@@ -183,22 +190,13 @@ map <Leader>h :nohl<CR>
 inoremap <C-Space> <C-n>
 
 " ---- Template Replacement ----
-map ;t :call Template(getline("."))<CR>jdd
+map <Leader>t :call Template(getline("."))<CR>jdd
 
 " ---- Buffer Management ----
 map  <C-S-tab>  :bp<CR>
 imap <C-S-tab>  <ESC>:bp<CR>
 map  <C-tab>    :bn<CR>
 imap <C-tab>    <ESC>:bn<CR>
-
-" ---- Working With Windows ----
-map <M-h> <C-w>h
-map <M-j> <C-w>j
-map <M-k> <C-w>k
-map <M-l> <C-w>l
-map <M-c> <C-w>c
-map <M-v> :vs<CR>
-map <M-s> :split<CR>
 
 " ---- Moving Lines Around ----
 nmap <C-j> ddp
@@ -233,7 +231,7 @@ cnoreabbrev trim %s/\s\+$//
 cnoreabbrev tofn ToFn
 cnoreabbrev fn ToFn
 cnoreabbrev <expr> ff
-          \ ((getcmdtype() == ':' && getcmdpos() <= 4)? 'cs f f'  : 'ff')
+            \ ((getcmdtype() == ':' && getcmdpos() <= 4)? 'cs f f'  : 'ff')
 
 "==============================================================================
 " Auto Commands

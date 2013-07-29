@@ -106,26 +106,11 @@ let g:DoxygenToolkit_authorExtra = "$HeadURL$"
 if( (&ft == "c") || (&ft == "cpp") )
     setlocal cindent
     setlocal cino={1s=1s:1s(1s
+elseif(&ft == "ruby")
+    setlocal tabstop=2
+    setlocal shiftwidth=2
+    set softtabstop=2
 endif
-
-"==============================================================================
-" Abbreviations
-"==============================================================================
-" Normal mode abbreviations
-abbreviate inc #include
-abbreviate def #define
-abbreviate ifdef #ifdef<CR>#endif<up><END>
-abbreviate ifndef #ifndef<CR>#endif<up><END>
-abbreviate prf printf("");<left><left><left>
-
-abbreviate ctest
-    \void test_(void)<CR>
-    \{<CR>
-    \   // Setup<CR>
-    \   // Expected calls<CR>
-    \   // Function to test<CR>
-    \   // Asserts<CR>
-    \}<UP><UP><UP><UP><UP><UP><END><ESC>%i
 
 "------------------------------------------------------------------------------
 " Connect To CTags and CScope
