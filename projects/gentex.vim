@@ -28,9 +28,10 @@ function! RefreshCScope()
         execute('cscope kill -1')
         execute('cd ' . g:CScopeDir)
         execute('silent ! cscope -Rb')
-        call ConnectCScope()
         execute('cd ' . g:ProjectPath)
+        call ConnectCScope()
     endif
+    execute('redraw!')
 endfunction
 
 " Update the CTags File
@@ -40,45 +41,16 @@ function! RefreshCTags()
         execute('silent ! ctags -R *')
         execute('cd ' . g:ProjectPath)
     endif
+    execute('redraw!')
 endfunction
-
-" Execute Rake with the given targets and open the quickfix window
-function! RunCmd(show_qf,task)
-    let cmd = 'silent !start /min cmd /c ' . a:task . ' > quickfix.txt 2>&1 ' .
-              \ '&gvim --servername ' . v:servername .
-              \ ' --remote-send "<ESC>:cgetfile quickfix.txt<CR>' .
-              \ ((a:show_qf == 1) ? '<ESC>:cope<CR>' : '') .
-              \ '<ESC>:let g:CmdRunning = 0<CR>"'
-
-    if !exists('g:CmdRunning') || (g:CmdRunning == 0)
-        execute(cmd)
-        let g:CmdRunning = 1
-    else
-        echoerr 'Error: A background command is already running!'
-    endif
-endfunction
-
-" Define a rake command
-command! -nargs=* Rake call RunCmd(1, 'rake ' . '<args>')
-cnoreabbrev rake Rake
-
-" Define a rake command
-command! -nargs=* Exec call RunCmd(0, '<args>')
-cnoreabbrev exec Exec
-cnoreabbrev cmd Exec
 
 "------------------------------------------------------------------------------
 " Project Specific Key Mappings
 "------------------------------------------------------------------------------
-map <silent> <F2>  <F3><F4>
-map <silent> <F3>  <ESC>:call RefreshCTags()<CR>
-map <silent> <F4>  <ESC>:call RefreshCScope()<CR>
-map <silent> <F6>  <ESC>:execute("find " . g:TestSrcPath . "/**/test_" . expand("%:t:r") . ".c")<CR>
-map <silent> <F7>  <ESC>:Rake test:%:t:r.c<CR>
-map <silent> <F8>  <ESC>:Rake bullseye:%:t:r.c<CR>
-map <silent> <F9>  <ESC>:call RunCmd(1,'grep -rEn "TODO\|@bug\|@fix" Code/ Test/')<CR>
-map <silent> <F10> <ESC>:Rake release<CR>
-map <silent> <F12> <ESC>:Rake debug<CR>
+map <F2> <ESC>:call RefreshCTags()<CR>:call RefreshCScope()<CR>
+map <F3> <ESC>:call RefreshCTags()<CR>
+map <F4> <ESC>:call RefreshCScope()<CR>
+map <F6> <ESC>:execute("find " . g:TestSrcPath . "/**/test_" . expand("%:t:r") . ".c")<CR>
 
 "==============================================================================
 " Doxygen Comment Configuration
@@ -105,7 +77,7 @@ let g:DoxygenToolkit_authorExtra = "$HeadURL$"
 " Gentex style code formatting
 if( (&ft == "c") || (&ft == "cpp") )
     setlocal cindent
-    setlocal cino={1s=1s:1s(1s
+    setlocal cino==1s:1s(1s
 elseif(&ft == "ruby")
     setlocal tabstop=2
     setlocal shiftwidth=2
