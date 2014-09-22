@@ -51,6 +51,7 @@ set omnifunc=syntaxcomplete#Complete " Auto complete based on syntax
 set completeopt=menu,longest         " Show a popup menu with the longest common prefix selected
 set wildmode=list:full
 set wildmenu
+set title
 
 "==============================================================================
 " Global Variables
@@ -94,7 +95,7 @@ function! LoadProject()
     endif
 
     if (!empty(proj))
-        exec "source " . proj
+        exec "source project.vim"
     endif
 endfunction
 
@@ -166,6 +167,23 @@ function! UpdateStatus(lmarg,rmarg)
 endfunction
 
 "==============================================================================
+" Spell Checking Rules For Code
+"==============================================================================
+function! SpellCheck()
+    " Turn on spell checking
+    set spell
+    " Ignore Doxygen Tags
+    syn match DoxyTags /[@\\][a-z]\+/ contains=@NoSpell transparent
+    syn cluster Spell add=DoxyTags
+    " Ignore Camel Cased Identifiers
+    syn match CamelCase /[A-Z][a-z0-9_]*[A-Z][A-Za-z0-9_]*/ contains=@NoSpell transparent
+    syn cluster Spell add=CamelCase
+    " Ignore Variable Names
+    syn match VarNames /[a-z0-9]\+_[a-z0-9_]*/ contains=@NoSpell transparent
+    syn cluster Spell add=VarNames
+endfunction
+
+"==============================================================================
 " Keyboard Mappings
 "==============================================================================
 " ---- Define Map Leader ----
@@ -186,6 +204,9 @@ vnoremap > >gv
 " ---- Clear Search Highlighting ----
 map <Leader>h :nohl<CR>
 
+" ---- Toggle Spell  Checking ----
+map <Leader>s :set spell!<CR>
+
 " ---- Omni Complete ----
 inoremap <C-Space> <C-n>
 
@@ -193,10 +214,10 @@ inoremap <C-Space> <C-n>
 map <Leader>t :call Template(getline("."))<CR>jdd
 
 " ---- Buffer Management ----
-map  <C-S-tab>  :bp<CR>
-imap <C-S-tab>  <ESC>:bp<CR>
-map  <C-tab>    :bn<CR>
-imap <C-tab>    <ESC>:bn<CR>
+map  <C-h>  :bp<CR>
+imap <C-h>  <ESC>:bp<CR>
+map  <C-l>  :bn<CR>
+imap <C-l>  <ESC>:bn<CR>
 
 " ---- Moving Lines Around ----
 nmap <C-j> ddp
@@ -236,6 +257,9 @@ cnoreabbrev <expr> ff
 "==============================================================================
 " Auto Commands
 "==============================================================================
+" Automatically turn on spell checking
+autocmd BufRead,BufNewFile * call SpellCheck()
+
 " Auto locate and load project specific settings
 autocmd BufEnter * call LoadProject()
 
