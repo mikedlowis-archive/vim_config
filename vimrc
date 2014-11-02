@@ -193,10 +193,10 @@ inoremap <C-Space> <C-n>
 map <Leader>t :call Template(getline("."))<CR>jdd
 
 " ---- Buffer Management ----
-map  <C-S-tab>  :bp<CR>
-imap <C-S-tab>  <ESC>:bp<CR>
-map  <C-tab>    :bn<CR>
-imap <C-tab>    <ESC>:bn<CR>
+map  <C-h>  :bp<CR>
+imap <C-h>  <ESC>:bp<CR>
+map  <C-l>  :bn<CR>
+imap <C-l>  <ESC>:bn<CR>
 
 " ---- Moving Lines Around ----
 nmap <C-j> ddp

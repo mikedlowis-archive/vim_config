@@ -31,6 +31,7 @@ function! RefreshCScope()
         call ConnectCScope()
         execute('cd ' . g:ProjectPath)
     endif
+    redraw!
 endfunction
 
 " Update the CTags File
@@ -40,6 +41,7 @@ function! RefreshCTags()
         execute('silent ! ctags -R *')
         execute('cd ' . g:ProjectPath)
     endif
+    redraw!
 endfunction
 
 " Execute Rake with the given targets and open the quickfix window
