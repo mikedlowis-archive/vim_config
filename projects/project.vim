@@ -28,9 +28,10 @@ function! RefreshCScope()
         execute('cscope kill -1')
         execute('cd ' . g:CScopeDir)
         execute('silent ! cscope -Rb')
-        call ConnectCScope()
         execute('cd ' . g:ProjectPath)
+        call ConnectCScope()
     endif
+    execute('redraw!')
 endfunction
 
 " Update the CTags File
@@ -57,6 +58,10 @@ map <F6> <ESC>:execute("find " . g:TestSrcPath . "/**/test_" . expand("%:t:r") .
 if( (&ft == "c") || (&ft == "cpp") )
     setlocal cindent
     setlocal cino==1s:1s(1s
+elseif(&ft == "ruby")
+    setlocal tabstop=2
+    setlocal shiftwidth=2
+    set softtabstop=2
 endif
 
 "------------------------------------------------------------------------------

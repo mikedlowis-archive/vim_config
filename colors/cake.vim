@@ -26,7 +26,7 @@ highlight StatusLine guifg=Black    guibg=white
 highlight Statement  guifg=Yellow               gui=NONE
 highlight Type                                  gui=NONE
 highlight CurBuf     guifg=Cyan
-highlight Pmenu                     guibg=blue  gui=bold
+highlight Pmenu      guifg=White    guibg=Blue  gui=bold
 
 " Console
 highlight Normal     ctermfg=LightGrey ctermbg=Black
@@ -39,7 +39,7 @@ highlight StatusLine ctermfg=White     ctermbg=Black
 highlight Statement  ctermfg=Yellow                  cterm=NONE
 highlight Type                                       cterm=NONE
 highlight CurBuf     ctermfg=Cyan
-highlight Pmenu                        ctermbg=blue  cterm=bold
+highlight Pmenu      ctermfg=White     ctermbg=Blue  cterm=bold
 
 " only for vim 5
 if has("unix")
