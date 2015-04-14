@@ -29,7 +29,7 @@ highlight CurBuf     guifg=Cyan
 highlight Pmenu      guifg=White    guibg=Blue  gui=bold
 
 " Console
-highlight Normal     ctermfg=LightGrey ctermbg=Black
+highlight Normal     ctermfg=LightGrey
 highlight Search     ctermfg=Black     ctermbg=Red   cterm=NONE
 highlight Visual                                     cterm=reverse
 highlight Cursor     ctermfg=Black     ctermbg=Green cterm=bold
