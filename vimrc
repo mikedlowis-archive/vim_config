@@ -30,7 +30,7 @@ set mat=2                            " How long to blink matching braces for
 set visualbell t_vb=                 " Turn off visual and error bells
 set noerrorbells                     " Turn off auditory bells
 set hid                              " Change buffer without saving
-set clipboard=unnamed                " Yank and Put commands use the system clipboard
+set clipboard=unnamedplus            " Yank and Put commands use the system clipboard
 set laststatus=2                     " Turn on the status line always
 set undodir=$VIMHOME/undo            " Set directory for storing undo files
 set undofile                         " Turn on persistent undo
@@ -202,10 +202,18 @@ vnoremap < <gv
 vnoremap > >gv
 
 " ---- Clear Search Highlighting ----
-map <Leader>h :nohl<CR>
+map <Leader>h :set hlsearch!<CR>
+
+" ---- Re-Enable search highlighting for new searches ----
+noremap * :set hlsearch<CR>:nohlsearch<CR>*
+noremap / :set hlsearch<CR>:nohlsearch<CR>/
+noremap ? :set hlsearch<CR>:nohlsearch<CR>?
 
 " ---- Toggle Spell  Checking ----
 map <Leader>s :set spell!<CR>
+
+" ---- Clear Search Highlighting ----
+map <Leader>n :set number!<CR>
 
 " ---- Omni Complete ----
 inoremap <C-Space> <C-n>
