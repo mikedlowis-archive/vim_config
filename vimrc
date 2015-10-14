@@ -2,10 +2,12 @@
 " General Settings
 "==============================================================================
 let $VIMHOME=expand("<sfile>:p:h")   " Keep track of where our vim settings directory is
+set background=dark                  " Set background style to dark for colorschemes
 syntax enable                        " Turn on syntax highlighting
 filetype plugin on                   " Turn on filetype plugins
 filetype indent on                   " Turn off filetype indent to use custom indent settings
-colorscheme cake                     " Set default color scheme
+let g:solarized_termtrans=1
+colorscheme solarized                " Set default color scheme
 set nocompatible                     " Disable VI compatibility
 set backspace=indent,eol,start       " Makes backspace work as expected
 set whichwrap+=<,>,[,],h,l           " Make cursor keys wrap line
@@ -58,19 +60,6 @@ set title
 "==============================================================================
 let g:TodoList    = "~/.todo.md"
 let g:TemplateDir = $VIMHOME . "/templates" " Directory to search for templates
-let g:BufsLeft    = "" " Buffers to the left of our current buffer
-let g:CurBuffer   = "" " Name of our current buffer
-let g:BufsRight   = "" " Buffers to the right of the current buffer
-
-"==============================================================================
-" Function and Command Definitions
-"==============================================================================
-set statusline=%{g:BufsLeft}
-set statusline+=%#CurBuf#
-set statusline+=%{g:CurBuffer}
-set statusline+=%#SyntaxLine#
-set statusline+=%{g:BufsRight}
-set statusline+=%<%=[%l][%c][%P][%L]%<
 
 "==============================================================================
 " Function and Command Definitions
@@ -124,26 +113,26 @@ function! Template(input)
     endif
 endfunction
 
-" UpdateStatus - Updates the status bar to display a list of buffers
+"  UpdateStatus - Updates the status bar to display a list of buffers
 function! UpdateStatus(lmarg,rmarg)
     " Reset our Globals
-    let g:CurBuffer = '[' . bufnr('%') . ' ' . expand('%:t') . ((&modified) ? ' +]' : ']')
+    let g:CurBuffer =  bufnr('%') . ' ' . expand('%:t')
     let g:BufsLeft = ""
     let g:BufsRight = ""
 
-    let tot_margin = a:lmarg+ a:rmarg
+    let tot_margin = a:lmarg + a:rmarg
     let my_left_len = (winwidth(0) - len(g:CurBuffer) - tot_margin)
     let my_right_len = 0
     let i = bufnr('$')
 
     while(i > 0)
         if buflisted(i) && getbufvar(i, "&modifiable") && i != bufnr('%')
-            let bufName  =  '[' . i . ' ' . fnamemodify(bufname(i), ":t")
-            let bufName .= (getbufvar(i, "&modified") ? ' +]' : ']' )
+            let bufName  =  i . ' ' . fnamemodify(bufname(i), ":t") " . ' | '
+            let bufName .= (getbufvar(i, "&modified") ? ',+' : '' )
             if i < bufnr('%')
-                let g:BufsLeft = bufName . g:BufsLeft
+                let g:BufsLeft = ' ' . bufName . ' |' . g:BufsLeft
             else
-                let g:BufsRight = bufName . g:BufsRight
+                let g:BufsRight = '| ' . bufName . ' ' . g:BufsRight
             endif
         endif
         let i -= 1
@@ -164,6 +153,13 @@ function! UpdateStatus(lmarg,rmarg)
     if len(g:BufsRight) > my_right_len
         let g:BufsRight = strpart(g:BufsRight, 0, my_right_len) . '>'
     endif
+
+    set statusline=%{g:BufsLeft}
+    set statusline+=%#CurBuf#
+    set statusline+=\ %{g:CurBuffer}%M
+    set statusline+=\ %#SyntaxLine#
+    set statusline+=%{g:BufsRight}
+    set statusline+=%<%=[%l][%c][%P][%L]%<
 endfunction
 
 "==============================================================================
@@ -275,7 +271,7 @@ autocmd BufEnter * call LoadProject()
 autocmd BufWritePre * call ReformatWhiteSpace()
 
 " Update the buffer list in the status line
-autocmd VimEnter,BufNew,BufEnter,BufWritePost,VimResized,FocusLost,FocusGained,InsertLeave * call UpdateStatus(0,20)
+autocmd BufEnter * call UpdateStatus(5,20)
 
 "==============================================================================
 " Doxygen Comment Configuration
@@ -283,14 +279,3 @@ autocmd VimEnter,BufNew,BufEnter,BufWritePost,VimResized,FocusLost,FocusGained,I
 " File author tag
 let g:DoxygenToolkit_authorName = "Michael D. Lowis"
 
-"==============================================================================
-" GVim
-"==============================================================================
-if has('gui_running')
-    set guioptions-=T      " no toolbar
-    set guioptions-=m      " no menubar
-    set guifont=Monaco:h10 " use 10 point Monaco font in gui mode
-
-    " GVim resets this for some stupid reason so disable visual bell ... again
-    autocmd GUIEnter * set visualbell t_vb=
-endif
